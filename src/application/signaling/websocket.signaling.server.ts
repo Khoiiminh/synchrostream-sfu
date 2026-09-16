@@ -9,6 +9,7 @@ import { ResumeConsumerHandler } from "./resume-consumer.handler.js";
 import { SignalingClient, SignalingClientRegistry } from "./signaling-client.registry.js";
 import { JoinSignalingRequest } from "./join-signaling.types.js";
 import { SignalingAuthenticator } from "./signaling-authenticator.js";
+import { JoinSignalingHandler } from "./join-signaling.handler.js";
 
 interface RoomDependencies {
     readonly consumeHandler: ConsumeHandler;
@@ -19,6 +20,7 @@ interface RoomDependencies {
     readonly getProducersHandler: GetProducersHandler;
     readonly resumeConsumerHandler: ResumeConsumerHandler;
     readonly signalingAuthenticator: SignalingAuthenticator;
+    readonly joinSignalingHandler: JoinSignalingHandler;
 }
 
 export class WebSocketSignalingServer {
@@ -199,16 +201,16 @@ export class WebSocketSignalingServer {
 
                 const clients = this.clientRegistry.getClientsForSession(request.data.mediaSessionId);
 
-                for (const client of clients) {
-                    if (client.participantId === client.participantId) {
+                for (const specClient of clients) {
+                    if (specClient.participantId === client.participantId) {
                         continue;
                     }
 
-                    if (client.socket.readyState !== WebSocket.OPEN) {
+                    if (specClient.socket.readyState !== WebSocket.OPEN) {
                         continue;
                     }
 
-                    client.socket.send(
+                    specClient.socket.send(
                         JSON.stringify({
                             type: 'new-producer',
                             data: {
@@ -285,6 +287,11 @@ export class WebSocketSignalingServer {
                 const authenticated = this.p.signalingAuthenticator.authenticate(
                     joinRequest.token,
                 );
+
+                this.p.joinSignalingHandler.handle({
+                    mediaSessionId: authenticated.mediaSessionId,
+                    participantId: authenticated.participantId,
+                });
 
                 const client: SignalingClient = {
                     socket,
