@@ -8,6 +8,7 @@ import { ConsumeHandler } from './application/signaling/consume.handler.js';
 import { CreateTransportHandler } from './application/signaling/create-transport.handler.js';
 import { GetProducersHandler } from './application/signaling/get-producers.handler.js';
 import { GetRtpCapabilitiesHandler } from './application/signaling/get-rtp-capabilities.handler.js';
+import { JoinSignalingHandler } from './application/signaling/join-signaling.handler.js';
 import { ProduceHandler } from './application/signaling/produce.handler.js';
 import { ResumeConsumerHandler } from './application/signaling/resume-consumer.handler.js';
 import { SignalingAuthenticator } from './application/signaling/signaling-authenticator.js';
@@ -76,7 +77,7 @@ export function createSfuApplication(): SfuApplication {
     const connectTransportHandler = new ConnectTransportHandler(mediaSessionRuntimeManager);
     const getProducersHandler = new GetProducersHandler(mediaSessionRuntimeManager);
     const resumeConsumerHandler = new ResumeConsumerHandler(mediaSessionRuntimeManager);
-
+    const joinSignalingHandler = new JoinSignalingHandler(mediaSessionRuntimeManager);
     const getRtpCapabilitiesHandler = new GetRtpCapabilitiesHandler(mediaSessionRuntimeManager);
 
     const signalingServer = new WebSocketSignalingServer(
@@ -89,6 +90,7 @@ export function createSfuApplication(): SfuApplication {
             connectTransportHandler,
             resumeConsumerHandler,
             signalingAuthenticator,
+            joinSignalingHandler,
         },
         config.ws.port,
     );
