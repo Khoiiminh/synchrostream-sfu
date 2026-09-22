@@ -62,12 +62,39 @@ export class ParticipantRuntime {
     );
 
     producer.on("transportclose", () => {
+      console.log("[Producer] Transport closed", {
+        producerId: producer.id,
+        participantId: this.participantId,
+      });
+
       this.producers.delete(producer.id);
 
       if (this.onProducerClosed) {
-        this.onProducerClosed(producer, this.participantId);
+          this.onProducerClosed(producer, this.participantId);
       }
     });
+
+producer.on("score", (score) => {
+    console.log("[Producer] Score", {
+        producerId: producer.id,
+        participantId: this.participantId,
+        score,
+    });
+});
+
+producer.on("videoorientationchange", (orientation) => {
+    console.log("[Producer] Video orientation changed", {
+        producerId: producer.id,
+        orientation,
+    });
+});
+
+producer.observer.on("close", () => {
+    console.log("[Producer] Observer closed", {
+        producerId: producer.id,
+        participantId: this.participantId,
+    });
+});
 
     this.producers.set(producer.id, producer);
 
