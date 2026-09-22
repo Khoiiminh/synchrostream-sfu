@@ -37,6 +37,21 @@ export class ConsumerManager {
             paused: true,
         });
 
+        consumer.on("score", (score) => {
+            console.log("[Consumer] Score", {
+                consumerId: consumer.id,
+                producerId: consumer.producerId,
+                score,
+            });
+        });
+
+        consumer.observer.on("close", () => {
+            console.log("[Consumer] Observer closed", {
+                consumerId: consumer.id,
+                producerId: consumer.producerId,
+            });
+        });
+
         console.log(
             '[Consumer] Created',
             {
