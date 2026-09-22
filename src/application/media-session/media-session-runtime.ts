@@ -144,12 +144,16 @@ export class MediaSessionRuntime {
     return undefined;
   }
 
-  getProducers(): ProducerInfo[] {
+  getProducers(requestingParticipantId: string): ProducerInfo[] {
     this.assertActive();
 
     const producers: ProducerInfo[] = [];
 
     for (const participant of this.participants.values()) {
+      if ( participant.getParticipantId() === requestingParticipantId ) {
+            continue;
+        }
+        
       for (const producer of participant.getProducers()) {
         producers.push({
           id: producer.id,
