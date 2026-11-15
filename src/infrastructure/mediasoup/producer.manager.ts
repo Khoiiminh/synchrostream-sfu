@@ -1,5 +1,8 @@
 import { Producer, WebRtcTransport } from "mediasoup/types";
 import { CreateProducerOptions } from "../../application/producer/producer.types.js";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("ProducerManager");
 
 export class ProducerManager {
     async createProducer(
@@ -17,14 +20,7 @@ export class ProducerManager {
             rtpParameters: options.rtpParameters,
         });
 
-        console.log(
-            '[Producer] Created',
-            {
-                producerId: producer.id,
-                transportId: transport.id,
-                kind: producer.kind,
-            },
-        );
+        log.debug({ producerId: producer.id, transportId: transport.id, kind: producer.kind }, "Producer created");
 
         return producer;
     }

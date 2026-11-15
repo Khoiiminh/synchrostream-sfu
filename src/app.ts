@@ -22,6 +22,9 @@ import { RouterManager } from "./infrastructure/mediasoup/router.manager.js";
 import { WebRtcServerManager } from "./infrastructure/mediasoup/web-rtc-server.manager.js";
 import { WebRtcTransportManager } from "./infrastructure/mediasoup/web-rtc-transport.manager.js";
 import { WorkerManager } from "./infrastructure/mediasoup/worker.manager.js";
+import { createLogger } from "./infrastructure/logging/logger.js";
+
+const log = createLogger("SfuApplication");
 
 export interface SfuApplication {
   start(): Promise<void>;
@@ -146,11 +149,11 @@ export function createSfuApplication(): SfuApplication {
 
       controlServer.start();
 
-      console.log(`[SFU:${config.nodeId}] SFU application started`);
+      log.info("SFU application started");
     },
 
     async shutdown() {
-      console.log(`[SFU:${config.nodeId}] Shutting down`);
+      log.info("Shutting down");
 
       await signalingServer.close();
 
@@ -160,7 +163,7 @@ export function createSfuApplication(): SfuApplication {
       await routerManager.close();
       await workerManager.close();
 
-      console.log(`[SFU:${config.nodeId}] Shutdown complete`);
+      log.info("Shutdown complete");
     },
   };
 }

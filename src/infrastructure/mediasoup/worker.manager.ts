@@ -1,6 +1,9 @@
 import { Worker } from "mediasoup/types";
 import { SfuConfig } from "../../config/sfu.config.js";
 import * as mediasoup from 'mediasoup';
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("WorkerManager");
 
 export class WorkerManager {
     private readonly workers: Worker[] = [];
@@ -23,23 +26,14 @@ export class WorkerManager {
             worker.on('died', (error) => {
                 this.workerFailureCount += 1;
 
-                console.error(
-                    `[SFU:${this.config.nodeId}] mediasoup worker died`,
-                    error,
-                );
+                log.fatal({ err: error }, "mediasoup worker died; exiting");
 
                 process.exit(1);
             });
 
             this.workers.push(worker);
 
-            console.log(
-                `[SFU:${this.config.nodeId}] Worker started`,
-                {
-                    workerIndex: index,
-                    pid: worker.pid,
-                },
-            );
+            log.info({ workerIndex: index, pid: worker.pid }, "mediasoup worker started");
         }
     }
 

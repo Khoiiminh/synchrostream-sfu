@@ -8,6 +8,9 @@ import { CreateMediaSessionHandler } from "../media-session/create-media-session
 import { EndMediaSessionHandler } from '../media-session/end-media-session.handler.js';
 import { SfuHealthHandler } from '../health/sfu-health.handler.js';
 import { SfuMetricsHandler } from '../metrics/sfu-metrics.handler.js';
+import { createLogger } from "../../infrastructure/logging/logger.js";
+
+const log = createLogger("SfuControlServer");
 
 export class SfuControlServer {
     private readonly app: Express;
@@ -68,10 +71,7 @@ export class SfuControlServer {
 
                     response.status(201).json(result);
                 } catch (error) {
-                    console.error(
-                        '[SFU Control] Failed to create MediaSession',
-                        error,
-                    );
+                    log.error({ err: error }, "Failed to create MediaSession");
 
                     response.status(400).json({
                         message:
@@ -98,10 +98,7 @@ export class SfuControlServer {
 
                     response.status(200).json(result);
                 } catch (error) {
-                    console.error(
-                        '[SFU Control] Failed to end MediaSession',
-                        error,
-                    );
+                    log.error({ err: error }, "Failed to end MediaSession");
 
                     response.status(400).json({
                         message: error instanceof Error
@@ -121,10 +118,7 @@ export class SfuControlServer {
 
                     response.status(200).json(result);
                 } catch (error) {
-                    console.error(
-                        '[SFU Control] Health check failed',
-                        error,
-                    );
+                    log.warn({ err: error }, "Health check rejected");
 
                     response.status(401).json({
                         message:
@@ -144,7 +138,7 @@ export class SfuControlServer {
 
                 response.status(200).json(result);
             } catch (error) {
-                console.error('[SFU Control] Metrics request failed', error);
+                log.warn({ err: error }, "Metrics request rejected");
 
                 response.status(401).json({
                     error: 'Unauthorized',
@@ -155,9 +149,7 @@ export class SfuControlServer {
 
     start(): void {
         this.server = this.app.listen(this.port, () => {
-            console.log(
-                `[SFU Control] Control server listening on port ${this.port}`,
-            );
+            log.info({ port: this.port }, "Control server listening");
         });
     }
 

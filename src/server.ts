@@ -1,11 +1,14 @@
 import { createSfuApplication } from './app.js';
+import { createLogger } from "./infrastructure/logging/logger.js";
+
+const log = createLogger("Process");
 
 const application = createSfuApplication();
 
 await application.start();
 
 const shutdown = async (signal: string) => {
-    console.log(`Received ${signal}`);
+    log.info({ signal }, "Received shutdown signal");
 
     await application.shutdown();
 

@@ -10,6 +10,9 @@ import { MEDIA_CODECS } from "./media-codecs.js";
 import { SfuConfig } from "../../config/sfu.config.js";
 import { CreateMediaSessionRequest } from "../../application/media-session/create-media-session.types.js";
 import { MediaSessionMetrics } from "../../application/media-session/media-session-metrics.types.js";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("MediaSessionRuntimeManager");
 
 export class MediaSessionRuntimeManager {
   private readonly sessions = new Map<string, MediaSessionRuntime>();
@@ -50,7 +53,7 @@ export class MediaSessionRuntimeManager {
 
     this.sessions.set(mediaSessionId, session);
 
-    console.log(`[MediaSession:${mediaSessionId}] Runtime created`);
+    log.info({ mediaSessionId }, "Media session runtime created");
 
     return session;
   }
@@ -178,7 +181,7 @@ export class MediaSessionRuntimeManager {
 
     this.sessions.delete(mediaSessionId);
 
-    console.log(`[MediaSession:${mediaSessionId}] Runtime removed`);
+    log.info({ mediaSessionId }, "Media session runtime removed");
   }
 
   validateAssignment(mediaSessionId: string, assignedNodeId: string): void {

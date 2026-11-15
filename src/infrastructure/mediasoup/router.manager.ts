@@ -1,4 +1,7 @@
 import { Router, RouterRtpCodecCapability, Worker } from "mediasoup/types";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("RouterManager");
 
 export class RouterManager {
     private readonly routers: Router[] = [];
@@ -13,13 +16,7 @@ export class RouterManager {
 
         this.routers.push(router);
 
-        console.log(
-            `[Router] Created`,
-            {
-                routerId: router.id,
-                workerPid: worker.pid,
-            },
-        );
+        log.info({ routerId: router.id, workerPid: worker.pid }, "Router created");
 
         return router;
     }

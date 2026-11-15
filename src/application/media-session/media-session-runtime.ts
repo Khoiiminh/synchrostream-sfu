@@ -7,6 +7,9 @@ import { ProducerInfo } from "../signaling/get-producers.types.js";
 import { MediaSessionRuntimeStatus } from "./media-session-runtime-status.js";
 import { MediaSessionMetrics } from "./media-session-metrics.types.js";
 import { MediaTransportMetrics } from "./media-transport-metrics.types.js";
+import { createLogger } from "../../infrastructure/logging/logger.js";
+
+const log = createLogger("MediaSessionRuntime");
 
 export interface MediaSessionRuntimeOptions {
   mediaSessionId: string;
@@ -85,9 +88,7 @@ export class MediaSessionRuntime {
 
     this.participants.set(participantId, participant);
 
-    console.log(`[MediaSession:${this.mediaSessionId}] Participant added`, {
-      participantId,
-    });
+    log.info({ mediaSessionId: this.mediaSessionId, participantId }, "Participant added");
 
     return participant;
   }
@@ -246,9 +247,7 @@ export class MediaSessionRuntime {
 
     this.participants.delete(participantId);
 
-    console.log(`[MediaSession:${this.mediaSessionId}] Participant removed`, {
-      participantId,
-    });
+    log.info({ mediaSessionId: this.mediaSessionId, participantId }, "Participant removed");
   }
 
   start(): void {
@@ -289,7 +288,7 @@ export class MediaSessionRuntime {
       this.router.close();
     }
 
-    console.log(`[MediaSession:${this.mediaSessionId}] Runtime closed`);
+    log.info({ mediaSessionId: this.mediaSessionId }, "Media session runtime closed");
   }
 
   private cleanupProducerConsumers(producerId: string): void {

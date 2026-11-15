@@ -14,6 +14,9 @@ import { JoinSignalingRequest } from "./join-signaling.types.js";
 import { SignalingAuthenticator } from "./signaling-authenticator.js";
 import { JoinSignalingHandler } from "./join-signaling.handler.js";
 import { LeaveSignalingHandler } from "./leave-signaling.handler.js";
+import { createLogger } from "../../infrastructure/logging/logger.js";
+
+const log = createLogger("SignalingServer");
 
 interface RoomDependencies {
   readonly consumeHandler: ConsumeHandler;
@@ -46,7 +49,7 @@ export class WebSocketSignalingServer {
 
   start(): void {
     this.server.on("connection", (socket: WebSocket) => {
-      console.log("[WebSocket] Client connected");
+      log.debug("Signaling client connected");
 
       let signalingClient: SignalingClient | undefined;
 
@@ -57,7 +60,7 @@ export class WebSocketSignalingServer {
       });
 
       socket.on("close", () => {
-        console.log("[WebSocket] Client disconnected");
+        log.debug({ mediaSessionId: signalingClient?.mediaSessionId, participantId: signalingClient?.participantId }, "Signaling client disconnected");
 
         if (signalingClient) {
           this.p.leaveSignalingHandler.handle(
@@ -70,11 +73,11 @@ export class WebSocketSignalingServer {
       });
 
       socket.on("error", (error) => {
-        console.error("[WebSocket] Client error", error);
+        log.warn({ err: error }, "Signaling client socket error");
       });
     });
 
-    console.log(`[WebSocket] Signaling server started on port ${this.port}`);
+    log.info({ port: this.port }, "Signaling server listening");
   }
 
   private async handleMessage(
@@ -329,7 +332,7 @@ export class WebSocketSignalingServer {
         }),
       );
     } catch (error) {
-      console.error("[WebSocket] Signaling error", error);
+      log.warn({ err: error }, "Signaling request failed");
 
       socket.send(
         JSON.stringify({

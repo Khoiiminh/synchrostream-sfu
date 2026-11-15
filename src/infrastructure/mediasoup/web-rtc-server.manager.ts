@@ -1,5 +1,8 @@
 import { WebRtcServer, Worker } from "mediasoup/types";
 import { SfuConfig } from "../../config/sfu.config.js";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("WebRtcServerManager");
 
 export class WebRtcServerManager {
     private readonly servers: WebRtcServer[] = [];
@@ -45,19 +48,7 @@ export class WebRtcServerManager {
 
         this.servers.push(webRtcServer);
 
-        console.log(
-            `[SFU:${this.config.nodeId}] WebRTC server created`,
-            {
-                workerIndex,
-                workerPid: worker.pid,
-                webRtcServerId: webRtcServer.id,
-                announcedAddress,
-                portRange: {
-                    min: this.config.rtc.minPort,
-                    max: this.config.rtc.maxPort,
-                },
-            },
-        );
+        log.info({ workerIndex, workerPid: worker.pid, webRtcServerId: webRtcServer.id, announcedAddress, portRange: { min: this.config.rtc.minPort, max: this.config.rtc.maxPort, } }, "WebRTC server created");
 
         return webRtcServer;
     }
