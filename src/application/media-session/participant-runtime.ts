@@ -14,6 +14,9 @@ import { ProducerManager } from "../../infrastructure/mediasoup/producer.manager
 import { ConsumerManager } from "../../infrastructure/mediasoup/consumer.manager.js";
 import { WebRtcTransportOptions } from "../transport/web-rtc-transport.types.js";
 import { MediaTransportMetrics } from "./media-transport-metrics.types.js";
+import { createLogger } from "../../infrastructure/logging/logger.js";
+
+const log = createLogger("ParticipantRuntime");
 
 export interface ParticipantRuntimeOptions {
   participantId: string;
@@ -62,10 +65,7 @@ export class ParticipantRuntime {
     );
 
     producer.on("transportclose", () => {
-      console.log("[Producer] Transport closed", {
-        producerId: producer.id,
-        participantId: this.participantId,
-      });
+      log.debug({ producerId: producer.id, participantId: this.participantId }, "Producer transport closed");
 
       this.producers.delete(producer.id);
 
@@ -75,25 +75,15 @@ export class ParticipantRuntime {
     });
 
 producer.on("score", (score) => {
-    console.log("[Producer] Score", {
-        producerId: producer.id,
-        participantId: this.participantId,
-        score,
-    });
+    log.trace({ producerId: producer.id, participantId: this.participantId, score }, "Producer score");
 });
 
 producer.on("videoorientationchange", (orientation) => {
-    console.log("[Producer] Video orientation changed", {
-        producerId: producer.id,
-        orientation,
-    });
+    log.debug({ producerId: producer.id, orientation }, "Producer video orientation changed");
 });
 
 producer.observer.on("close", () => {
-    console.log("[Producer] Observer closed", {
-        producerId: producer.id,
-        participantId: this.participantId,
-    });
+    log.debug({ producerId: producer.id, participantId: this.participantId }, "Producer closed");
 });
 
     this.producers.set(producer.id, producer);

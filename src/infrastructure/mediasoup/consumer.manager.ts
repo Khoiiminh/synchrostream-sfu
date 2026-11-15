@@ -1,5 +1,8 @@
 import { Consumer, Producer, Router, RtpCapabilities, WebRtcTransport } from "mediasoup/types";
 import { ConsumerOptions } from "../../application/consumer/consumer.types.js";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("ConsumerManager");
 
 export class ConsumerManager {
     async createConsumer(
@@ -38,29 +41,14 @@ export class ConsumerManager {
         });
 
         consumer.on("score", (score) => {
-            console.log("[Consumer] Score", {
-                consumerId: consumer.id,
-                producerId: consumer.producerId,
-                score,
-            });
+            log.trace({ consumerId: consumer.id, producerId: consumer.producerId, score }, "Consumer score");
         });
 
         consumer.observer.on("close", () => {
-            console.log("[Consumer] Observer closed", {
-                consumerId: consumer.id,
-                producerId: consumer.producerId,
-            });
+            log.debug({ consumerId: consumer.id, producerId: consumer.producerId }, "Consumer closed");
         });
 
-        console.log(
-            '[Consumer] Created',
-            {
-                consumerId: consumer.id,
-                producerId: producer.id,
-                transportId: transport.id,
-                kind: consumer.kind,
-            },
-        );
+        log.debug({ consumerId: consumer.id, producerId: producer.id, transportId: transport.id, kind: consumer.kind }, "Consumer created");
 
         return consumer;
     }

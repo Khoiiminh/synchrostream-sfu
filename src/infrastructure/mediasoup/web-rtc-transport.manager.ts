@@ -5,6 +5,9 @@ import {
   WebRtcTransport,
 } from "mediasoup/types";
 import { WebRtcTransportOptions } from "../../application/transport/web-rtc-transport.types.js";
+import { createLogger } from "../logging/logger.js";
+
+const log = createLogger("WebRtcTransportManager");
 
 export class WebRtcTransportManager {
   async createTransport(
@@ -19,36 +22,22 @@ export class WebRtcTransportManager {
     });
 
     transport.on("icestatechange", (iceState) => {
-      console.log("[WebRTC Transport] ICE state changed", {
-        transportId: transport.id,
-        iceState,
-      });
+      log.debug({ transportId: transport.id, iceState }, "ICE state changed");
     });
 
     transport.on("iceselectedtuplechange", (iceSelectedTuple) => {
-      console.log("[WebRTC Transport] ICE selected tuple changed", {
-        transportId: transport.id,
-        iceSelectedTuple,
-      });
+      log.debug({ transportId: transport.id, iceSelectedTuple }, "ICE selected tuple changed");
     });
 
     transport.on("dtlsstatechange", (dtlsState) => {
-      console.log("[WebRTC Transport] DTLS state changed", {
-        transportId: transport.id,
-        dtlsState,
-      });
+      log.debug({ transportId: transport.id, dtlsState }, "DTLS state changed");
     });
 
     transport.on("@close", () => {
-      console.log("[WebRTC Transport] Closed", {
-        transportId: transport.id,
-      });
+      log.debug({ transportId: transport.id }, "Transport closed");
     });
 
-    console.log("[WebRTC] Transport created", {
-      transportId: transport.id,
-      routerId: router.id,
-    });
+    log.debug({ transportId: transport.id, routerId: router.id }, "Transport created");
 
     return transport;
   }
@@ -74,9 +63,7 @@ export class WebRtcTransportManager {
       dtlsParameters,
     });
 
-    console.log("[WebRTC] Transport connected", {
-      transportId: transport.id,
-    });
+    log.debug({ transportId: transport.id }, "Transport connected");
   }
 
   closeTransport(transport: WebRtcTransport): void {
